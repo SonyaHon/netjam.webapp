@@ -1,10 +1,10 @@
 <template>
   <FullCenter>
-    <VForm v-model="isFormValid">
+    <VForm v-model="isFormValid" ref="form">
       <VLayout column>
         <div class="body mb-6">Please login</div>
         <VTextField
-          solo
+          outlined
           dense
           label="Username"
           required
@@ -13,7 +13,7 @@
           @keypress.enter="login"
         />
         <VTextField
-          solo
+          outlined
           dense
           :type="passInputType"
           v-model="password"
@@ -29,7 +29,8 @@
           @keypress.enter="login"
         />
         <VLayout row>
-          <VBtn small color="primary" @click="login">Submit</VBtn>
+          <VSpacer />
+          <VBtn small class="mr-3" color="primary" @click="login">Submit</VBtn>
         </VLayout>
       </VLayout>
     </VForm>
@@ -43,15 +44,22 @@ export default {
   components: { FullCenter },
   data() {
     return {
-      isFormValid: false,
+      isFormValid: true,
       username: "",
-      usernameRules: [],
+      usernameRules: [v => (!v ? "Please provide a username" : true)],
       passInputType: "password",
-      passRules: [],
+      passRules: [v => (!v ? "Please provide a password" : true)],
+      password: "",
     };
   },
   methods: {
-    async login() {},
+    async login() {
+      if (!this.$refs.form) return;
+      this.$refs.form.validate();
+      if (!this.isFormValid) return;
+      console.log("Some cool stuff");
+      this.$store.dispatch("auth/fetchUser");
+    },
   },
 };
 </script>
