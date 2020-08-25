@@ -1,40 +1,33 @@
 <template>
-  <FullCenter>
-    <VForm v-model="isFormValid" ref="form">
-      <VLayout column>
-        <div class="body mb-6">Please login</div>
-        <VTextField
-          outlined
+  <full-center>
+    <v-form v-model="formValid" ref="form">
+      <v-layout column class="nj-form">
+        <div class="text-h5 mb-6">Sign in</div>
+        <v-text-field
           dense
-          label="Username"
-          required
-          :rules="usernameRules"
+          outlined
           v-model="username"
+          label="Username"
+          :rules="rules"
           @keypress.enter="login"
-        />
-        <VTextField
-          outlined
+        ></v-text-field>
+        <v-text-field
           dense
-          :type="passInputType"
-          v-model="password"
+          outlined
           label="Password"
-          :rules="passRules"
-          required
-          :append-icon="
-            passInputType === 'password' ? 'mdi-eye' : 'mdi-eye-off'
-          "
-          @click:append="
-            passInputType = passInputType === 'password' ? 'text' : 'password'
-          "
-          @keypress.enter="login"
-        />
-        <VLayout row>
-          <VSpacer />
-          <VBtn small class="mr-3" color="primary" @click="login">Submit</VBtn>
-        </VLayout>
-      </VLayout>
-    </VForm>
-  </FullCenter>
+          v-model="password"
+          :rules="rules"
+          :type="togglePassword ? 'text' : 'password'"
+          :append-icon="togglePassword ? 'mdi-eye-off' : 'mdi-eye'"
+          @click:append="togglePassword = !togglePassword"
+        ></v-text-field>
+        <v-btn color="primary" class="mb-3" @click="login">Submit</v-btn>
+        <router-link to="/auth/register" class="caption text-right">
+          Register instead
+        </router-link>
+      </v-layout>
+    </v-form>
+  </full-center>
 </template>
 
 <script>
@@ -44,22 +37,30 @@ export default {
   components: { FullCenter },
   data() {
     return {
-      isFormValid: true,
+      formValid: true,
       username: "",
-      usernameRules: [v => (!v ? "Please provide a username" : true)],
-      passInputType: "password",
-      passRules: [v => (!v ? "Please provide a password" : true)],
       password: "",
+      rules: [v => !!v || "Field is required"],
+      togglePassword: false,
     };
   },
   methods: {
     async login() {
-      if (!this.$refs.form) return;
       this.$refs.form.validate();
-      if (!this.isFormValid) return;
-      console.log("Some cool stuff");
-      this.$store.dispatch("auth/fetchUser");
+      if (!this.formValid) return;
+      const res = await this.$store.dispatch("auth/login", {
+        username: this.username,
+        password: this.password,
+      });
+      console.log(res);
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.nj-form {
+  min-width: 300px;
+  width: 300px;
+}
+</style>
