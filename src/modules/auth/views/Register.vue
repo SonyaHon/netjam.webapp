@@ -72,11 +72,15 @@ export default {
     async tryRegister() {
       this.$refs.form.validate();
       if (!this.formValid) return;
-      const res = await this.$store.dispatch("auth/register", {
-        username: this.username,
-        password: this.passwordOne,
-      });
-      console.log(res);
+      try {
+        await this.$store.dispatch("auth/register", {
+          username: this.username,
+          password: this.passwordOne,
+        });
+      } catch (e) {
+        // @todo add something here
+      }
+      this.$router.replace("auth/login");
     },
   },
 };

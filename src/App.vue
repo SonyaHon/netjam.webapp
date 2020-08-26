@@ -49,12 +49,16 @@ export default {
     },
   },
   methods: {
-    logout() {},
+    logout() {
+      localStorage.removeItem("nj-jwt-token");
+      location.reload();
+    },
   },
   async mounted() {
-    this.inited = true;
-
-    const result = await this.$store.dispatch("auth/fetchSelf");
+    const result = await this.$store.dispatch(
+      "auth/fetchSelf",
+      localStorage.getItem("nj-jwt-token"),
+    );
     switch (result) {
       case "login":
         if (this.$route.name !== "auth.login") {
@@ -62,13 +66,15 @@ export default {
         }
         break;
       case "ok":
-        if (this.$route.name !== "main.home") {
-          await this.$router.push("/main/home");
+        if (this.$route.name !== "main.home" && this.$route.name !== "main") {
+          await this.$router.push("/");
         }
         break;
       case "error":
         break;
     }
+
+    this.inited = true;
   },
 };
 </script>

@@ -48,11 +48,15 @@ export default {
     async login() {
       this.$refs.form.validate();
       if (!this.formValid) return;
-      const res = await this.$store.dispatch("auth/login", {
-        username: this.username,
-        password: this.password,
-      });
-      console.log(res);
+      try {
+        await this.$store.dispatch("auth/login", {
+          username: this.username,
+          password: this.password,
+        });
+      } catch (e) {
+        // @todo add something here
+      }
+      this.$router.replace("/");
     },
   },
 };

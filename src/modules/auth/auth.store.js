@@ -33,11 +33,20 @@ export const authStore = {
         username: data.username,
         password: data.password,
       });
-      commit("SET_USER", { ...res.data });
+      if (res && res.data && res.data.token) {
+        localStorage.setItem("nj-jwt-token", res.data.token);
+        commit("SET_USER", { ...res.data.data });
+      } else {
+        throw new Error();
+      }
     },
-    async fetchSelf({ commit }) {
+    async fetchSelf({ commit }, token) {
       try {
-        const res = await authInstance.get("user/fetch-self");
+        const res = await authInstance.get("user/fetch-self", {
+          params: {
+            token,
+          },
+        });
         commit("SET_USER", { ...res.data });
         return "ok";
       } catch (e) {
