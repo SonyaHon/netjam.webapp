@@ -1,6 +1,21 @@
 <template>
   <v-app>
     <template v-if="inited">
+      <v-navigation-drawer app v-if="showNavBar">
+        <v-layout column fill-height justify-space-between>
+          <navigation-drawer></navigation-drawer>
+          <v-list>
+            <v-list-item @click="logout">
+              <v-list-item-icon>
+                <v-icon> mdi-logout </v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title> Sign out </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-layout>
+      </v-navigation-drawer>
       <v-main app>
         <router-view></router-view>
       </v-main>
@@ -18,15 +33,27 @@
 
 <script>
 import FullCenter from "@/components/layouts/FullCenter.vue";
+import NavigationDrawer from "@/components/NavigationDrawer.vue";
+
 export default {
   name: "App",
-  components: { FullCenter },
+  components: { FullCenter, NavigationDrawer },
   data() {
     return {
       inited: false,
     };
   },
+  computed: {
+    showNavBar() {
+      return !this.$route.meta.hideNav;
+    },
+  },
+  methods: {
+    logout() {},
+  },
   async mounted() {
+    this.inited = true;
+
     const result = await this.$store.dispatch("auth/fetchSelf");
     switch (result) {
       case "login":
@@ -42,7 +69,6 @@ export default {
       case "error":
         break;
     }
-    this.inited = true;
   },
 };
 </script>
