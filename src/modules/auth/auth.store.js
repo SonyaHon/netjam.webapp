@@ -7,7 +7,11 @@ const authInstance = axios.create({
 export const authStore = {
   namespaced: true,
   state: {
-    user: {},
+    user: {
+      id: null,
+      username: null,
+      data: {},
+    },
     auth: {},
   },
   mutations: {
@@ -31,9 +35,17 @@ export const authStore = {
       });
       commit("SET_USER", { ...res.data });
     },
-    async fetchUser({ commit }) {
-      const res = await authInstance.get("user/fetch-self");
-      commit("SET_USER", { ...res.data });
+    async fetchSelf({ commit }) {
+      try {
+        const res = await authInstance.get("user/fetch-self");
+        commit("SET_USER", { ...res.data });
+        return "ok";
+      } catch (e) {
+        if (e.response.data && e.response.data.code === "0x04") {
+          return "login";
+        }
+        return "error";
+      }
     },
   },
 };
