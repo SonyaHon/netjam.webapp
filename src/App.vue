@@ -8,7 +8,7 @@
     <template v-else>
       <full-center>
         <v-progress-circular
-          color="primary"
+          color="secondary"
           indeterminate
         ></v-progress-circular>
       </full-center>
