@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <notifications group="main" animation-type="velocity" width="300px" />
     <template v-if="inited">
       <v-navigation-drawer app v-if="showNavBar">
         <v-layout column fill-height justify-space-between>
@@ -55,26 +56,34 @@ export default {
     },
   },
   async mounted() {
-    const result = await this.$store.dispatch(
-      "auth/fetchSelf",
-      localStorage.getItem("nj-jwt-token"),
-    );
-    switch (result) {
-      case "login":
-        if (this.$route.name !== "auth.login") {
-          await this.$router.push("/auth/login");
-        }
-        break;
-      case "ok":
-        if (this.$route.name !== "main.home" && this.$route.name !== "main") {
-          await this.$router.push("/");
-        }
-        break;
-      case "error":
-        break;
-    }
+    try {
+      const result = await this.$store.dispatch("auth/fetchSelf");
+      switch (result) {
+        case "login":
+          if (this.$route.name !== "auth.login") {
+            await this.$router.push("/auth/login");
+          }
+          break;
+        case "ok":
+          if (this.$route.name !== "main.home" && this.$route.name !== "main") {
+            await this.$router.push("/");
+          }
+          break;
+        case "error":
+          break;
+      }
 
-    this.inited = true;
+      this.inited = true;
+    } catch (e) {
+      this.$notify({
+        group: "main",
+        type: "error",
+        title: "Connection error",
+        text:
+          "Could not connect to the authentication server. Please try reloading this page or come again later",
+        duration: -1,
+      });
+    }
   },
 };
 </script>

@@ -20,6 +20,7 @@
           :type="togglePassword ? 'text' : 'password'"
           :append-icon="togglePassword ? 'mdi-eye-off' : 'mdi-eye'"
           @click:append="togglePassword = !togglePassword"
+          @keypress.enter="login"
         ></v-text-field>
         <v-btn color="primary" class="mb-3" @click="login">Submit</v-btn>
         <router-link to="/auth/register" class="caption text-right">
